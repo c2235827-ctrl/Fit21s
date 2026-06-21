@@ -17,6 +17,7 @@ import HabitsJournal from './components/HabitsJournal';
 import UserProfile from './components/UserProfile';
 import UpgradePro from './components/UpgradePro';
 import NotificationBell from './components/NotificationBell';
+import InstallPopup from './components/InstallPopup';
 
 export default function App() {
   const [session, setSession] = useState<any>(null);
@@ -432,6 +433,7 @@ export default function App() {
           </div>
         </nav>
       )}
+      <InstallPopup />
     </div>
   );
 }
