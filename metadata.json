@@ -1,0 +1,6 @@
+{
+  "name": "Fit21",
+  "description": "Fit21 is a fitness accountability and habit-building app with the tagline 'Feel 21 Again'.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
