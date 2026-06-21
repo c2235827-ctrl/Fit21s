@@ -136,18 +136,16 @@ export default function App() {
   if (screenState === 'splash') {
     return (
       <div className="relative w-full h-screen overflow-hidden bg-[#0A0A0A] flex flex-col justify-between p-6">
-        {/* Full-screen looping muted autoplay background video */}
-        <video
-          autoPlay
-          loop
-          muted
-          playsInline
-          className="absolute inset-0 w-full h-full object-cover z-0 filter brightness-[0.35]"
-          src="/assets/splash-bg.mp4"
-          poster="https://cdn-icons-png.flaticon.com/512/12563/12563330.png"
-        >
-          {/* Fallback to background gradient if asset stream is not active */}
-        </video>
+        {/* Full-screen looping muted autoplay YouTube background video */}
+        <div className="absolute inset-0 z-0 pointer-events-none overflow-hidden filter brightness-[0.35]">
+          <iframe
+            className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[115vw] h-[64.68vw] min-h-[115vh] min-w-[204.44vh]"
+            src="https://www.youtube.com/embed/ksZ7ZJK7E5k?autoplay=1&mute=1&controls=0&loop=1&playlist=ksZ7ZJK7E5k&playsinline=1&rel=0&modestbranding=1&showinfo=0&iv_load_policy=3&enablejsapi=1"
+            title="Fit21 Splash Background"
+            frameBorder="0"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+          />
+        </div>
 
         {/* Gradient dark overlay */}
         <div className="absolute inset-0 bg-gradient-to-b from-black/80 via-black/40 to-black/95 z-1" />
