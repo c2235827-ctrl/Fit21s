@@ -43,72 +43,25 @@ export default function TodayChallenge({
     setLoading(true);
     const todayStr = getLocalDateString();
     try {
-      // 1. Fetch challenge for today's date
       const { data, error } = await supabase
         .from('challenges')
         .select('*')
-        .eq('challenge_date', todayStr)
+        .eq('date', todayStr)
+        .is('user_id', null)   // official daily challenge (not user-created)
         .maybeSingle();
 
       if (error) throw error;
 
       if (data) {
-        setChallenge(data);
+        // Backwards compatibility for Category/Icon mapping
+        const mappedChallenge = {
+          ...data,
+          category_icon: data.category || 'custom'
+        };
+        setChallenge(mappedChallenge);
         checkIfCompleted(data.id);
       } else {
-        // No challenge for today. Let's create/seed one dynamically, real row insert
-        const defaultChallenges = [
-          {
-            title: '21-Minute Burnout Run',
-            category_icon: 'run',
-            target_value: '5',
-            target_unit: 'km',
-            description: 'Feel the morning cold and crush a steady, fast-paced cardio run to elevate your high energy limits!',
-            challenge_date: todayStr
-          },
-          {
-            title: 'Hydration Anchor',
-            category_icon: 'water',
-            target_value: '4',
-            target_unit: 'Liters',
-            description: 'Drink 4 liters of clean spring water today. Track every glass!',
-            challenge_date: todayStr
-          },
-          {
-            title: 'Push-up Avalanche',
-            category_icon: 'pushups',
-            target_value: '100',
-            target_unit: 'Reps',
-            description: 'Do 100 pushups in as few sets as possible. Quality form is paramount.',
-            challenge_date: todayStr
-          },
-          {
-            title: 'Golden Hour Sleep Routine',
-            category_icon: 'sleep',
-            target_value: '8',
-            target_unit: 'Hours',
-            description: 'Wind down by 10 PM. Block blue light screens and lock in a deep recuperative cycle.',
-            challenge_date: todayStr
-          }
-        ];
-
-        const chosen = defaultChallenges[Math.floor(Math.random() * defaultChallenges.length)];
-        const { data: inserted, error: insertError } = await supabase
-          .from('challenges')
-          .insert(chosen)
-          .select()
-          .single();
-
-        if (!insertError && inserted) {
-          setChallenge(inserted);
-          checkIfCompleted(inserted.id);
-        } else {
-          // If insert fails (due to DB constraints or read-only), fallback on UI safely
-          setChallenge({
-            id: 'dummy-challenge-id',
-            ...chosen
-          });
-        }
+        setChallenge(null); // show clean empty state: "No challenge today, check back soon!"
       }
     } catch (err) {
       console.error('Error in challenge flow:', err);

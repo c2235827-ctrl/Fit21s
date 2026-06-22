@@ -11,6 +11,8 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
     <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/12563/12563330.png" />
     <script src="https://checkout.flutterwave.com/v3.js"></script>
+    <link rel="stylesheet" href="https://api.tomtom.com/maps-sdk-for-web/cdn/6.x/6.25.0/maps/maps.css">
+    <script src="https://api.tomtom.com/maps-sdk-for-web/cdn/6.x/6.25.0/maps/maps-web.min.js"></script>
     <script>
       if ('serviceWorker' in navigator) {
         window.addEventListener('load', () => {
@@ -19,6 +21,15 @@
             .catch(err => console.error('Service Worker registration failed:', err));
         });
       }
+    </script>
+    <script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
+    <script>
+      window.OneSignalDeferred = window.OneSignalDeferred || [];
+      OneSignalDeferred.push(async function(OneSignal) {
+        await OneSignal.init({
+          appId: "6cd283bb-9b69-4a80-aa96-f0870f64e18b",
+        });
+      });
     </script>
   </head>
   <body class="bg-[#0A0A0A] text-white">

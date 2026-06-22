@@ -14,11 +14,11 @@ export interface Profile {
 export interface Challenge {
   id: string;
   title: string;
-  category_icon: 'run' | 'walk' | 'gym' | 'water' | 'sleep' | 'read' | 'pushups' | 'custom' | string;
+  category: 'run' | 'walk' | 'gym' | 'water' | 'sleep' | 'read' | 'pushups' | 'custom' | 'meditate' | string;
   target_value: string;
   target_unit: string;
   description: string;
-  challenge_date: string; // YYYY-MM-DD
+  date: string; // YYYY-MM-DD
 }
 
 export interface Completion {
@@ -35,11 +35,15 @@ export interface Completion {
 export interface Post {
   id: string;
   user_id: string; // author id
-  post_type: 'completion' | 'free_form';
+  post_type: 'post' | 'completion' | 'achievement';
   completion_id?: string;
   content: string;
   image_url?: string;
   video_url?: string;
+  share_card_data?: {
+    kind: 'streak' | 'completions' | 'first_run' | 'pro' | string;
+    value: number;
+  };
   is_deleted?: boolean;
   is_flagged?: boolean;
   created_at: string;

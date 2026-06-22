@@ -1,9 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { supabase } from './lib/supabase';
 import { Profile } from './types';
 import { 
   Flame, Trophy, Compass, PlusCircle, CheckSquare, User as UserIcon, 
-  Dumbbell, Sparkles, MessageSquare, ExternalLink, Loader2, Play 
+  Dumbbell, Sparkles, MessageSquare, ExternalLink, Loader2, Play, Users 
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 
@@ -18,6 +18,7 @@ import UserProfile from './components/UserProfile';
 import UpgradePro from './components/UpgradePro';
 import NotificationBell from './components/NotificationBell';
 import InstallPopup from './components/InstallPopup';
+import GroupsTab from './components/GroupsTab';
 
 export default function App() {
   const [session, setSession] = useState<any>(null);
@@ -25,8 +26,10 @@ export default function App() {
   const [screenState, setScreenState] = useState<'splash' | 'signup' | 'login' | 'app'>('splash');
   const [profile, setProfile] = useState<Profile | null>(null);
   const [isPro, setIsPro] = useState(false);
-  const [activeTab, setActiveTab] = useState<'home' | 'feed' | 'challenges' | 'habits' | 'profile'>('home');
+  const [activeTab, setActiveTab] = useState<'home' | 'feed' | 'groups' | 'challenges' | 'habits' | 'profile'>('home');
   const [showPaywall, setShowPaywall] = useState(false);
+
+  const oneSignalTriggeredForUser = useRef<string | null>(null);
 
   const fetchUserProfile = async (uid: string) => {
     try {
@@ -109,6 +112,14 @@ export default function App() {
         setIsPro(false);
         setScreenState('splash');
         setLoadingAuth(false);
+
+        // OneSignal untag
+        oneSignalTriggeredForUser.current = null;
+        const windowObj = window as any;
+        windowObj.OneSignalDeferred = windowObj.OneSignalDeferred || [];
+        windowObj.OneSignalDeferred.push(function(OneSignal: any) {
+          OneSignal.logout();
+        });
       }
     });
 
@@ -116,6 +127,26 @@ export default function App() {
       subscription.unsubscribe();
     };
   }, []);
+
+  useEffect(() => {
+    if (session?.user?.id && screenState === 'app') {
+      if (oneSignalTriggeredForUser.current !== session.user.id) {
+        oneSignalTriggeredForUser.current = session.user.id;
+        const windowObj = window as any;
+        windowObj.OneSignalDeferred = windowObj.OneSignalDeferred || [];
+
+        // Request push permission (this executes once per authenticated session when reaching dashboard)
+        windowObj.OneSignalDeferred.push(function(OneSignal: any) {
+          OneSignal.Notifications.requestPermission();
+        });
+
+        // Tag the device with user's ID
+        windowObj.OneSignalDeferred.push(function(OneSignal: any) {
+          OneSignal.login(session.user.id);
+        });
+      }
+    }
+  }, [session?.user?.id, screenState]);
 
   const handleRefreshProfile = () => {
     if (session?.user?.id) {
@@ -331,6 +362,13 @@ export default function App() {
                 />
               )}
 
+              {activeTab === 'groups' && (
+                <GroupsTab
+                  userId={session.user.id}
+                  profile={profile}
+                />
+              )}
+
               {activeTab === 'challenges' && (
                 <ChallengesTab
                   userId={session.user.id}
@@ -355,6 +393,13 @@ export default function App() {
                     setSession(null);
                     setProfile(null);
                     setScreenState('splash');
+
+                    oneSignalTriggeredForUser.current = null;
+                    const windowObj = window as any;
+                    windowObj.OneSignalDeferred = windowObj.OneSignalDeferred || [];
+                    windowObj.OneSignalDeferred.push(function(OneSignal: any) {
+                      OneSignal.logout();
+                    });
                   }}
                   onNavigateToUpgrade={() => setShowPaywall(true)}
                   isPro={isPro}
@@ -368,7 +413,7 @@ export default function App() {
       {/* Persistent Beautiful Responsive Bottom Navigation Rail */}
       {!showPaywall && (
         <nav className="fixed bottom-0 inset-x-0 bg-[#0A0A0A]/95 backdrop-blur-md border-t border-neutral-900 py-2 sm:py-3 z-40 shadow-xl">
-          <div className="max-w-md mx-auto grid grid-cols-5 text-center text-[10px] font-bold text-neutral-400">
+          <div className="max-w-lg mx-auto grid grid-cols-6 text-center text-[10px] font-bold text-neutral-400">
             {/* HOME */}
             <button
               id="nav-tab-home"
@@ -391,6 +436,18 @@ export default function App() {
             >
               <Compass className={`w-5 h-5 ${activeTab === 'feed' ? 'stroke-[2.5]' : ''}`} />
               <span className="scale-95 leading-none mt-0.5">Feed</span>
+            </button>
+
+            {/* GROUPS */}
+            <button
+              id="nav-tab-groups"
+              onClick={() => setActiveTab('groups')}
+              className={`flex flex-col items-center gap-1 py-1 transition cursor-pointer ${
+                activeTab === 'groups' ? 'text-[#00E87A]' : 'text-neutral-500 hover:text-white'
+              }`}
+            >
+              <Users className={`w-5 h-5 ${activeTab === 'groups' ? 'stroke-[2.5]' : ''}`} />
+              <span className="scale-95 leading-none mt-0.5">Groups</span>
             </button>
 
             {/* CHALLENGES */}

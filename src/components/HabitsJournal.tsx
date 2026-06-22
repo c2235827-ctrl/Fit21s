@@ -707,14 +707,16 @@ export default function HabitsJournal({ userId, isPro, onNavigateToUpgrade }: Ha
                 {/* Private Toggle */}
                 <div className="flex items-center justify-between p-3.5 bg-neutral-900/40 border border-neutral-850 rounded-2xl">
                   <div>
-                    <label className="block text-xs font-bold text-white">Private reflection</label>
-                    <p className="text-[10px] text-neutral-500">Only visible to your local journal screen</p>
+                    <label className="block text-xs font-bold text-white mb-0.5">Privacy & Sharing</label>
+                    <p className="text-[10px] text-neutral-400 font-semibold uppercase">
+                      {!journalIsPrivate ? '🌍 Anyone can read this entry' : '🔒 Only you can see this'}
+                    </p>
                   </div>
                   <input
                     id="checkbox-journal-private"
                     type="checkbox"
-                    checked={journalIsPrivate}
-                    onChange={e => setJournalIsPrivate(e.target.checked)}
+                    checked={!journalIsPrivate}
+                    onChange={e => setJournalIsPrivate(!e.target.checked)}
                     className="w-5 h-5 rounded-md border-neutral-800 text-[#00E87A] focus:ring-[#00E87A] bg-neutral-950 cursor-pointer"
                   />
                 </div>
@@ -820,14 +822,16 @@ export default function HabitsJournal({ userId, isPro, onNavigateToUpgrade }: Ha
                 {/* Private Toggle */}
                 <div className="flex items-center justify-between p-3.5 bg-neutral-900/40 border border-neutral-850 rounded-2xl">
                   <div>
-                    <label className="block text-xs font-bold text-white">Private reflection</label>
-                    <span className="text-[10px] text-neutral-500">Only visible to your local journal screen</span>
+                    <label className="block text-xs font-bold text-white mb-0.5">Privacy & Sharing</label>
+                    <span className="text-[10px] text-neutral-400 font-semibold uppercase">
+                      {!editingJournal.is_private ? '🌍 Anyone can read this entry' : '🔒 Only you can see this'}
+                    </span>
                   </div>
                   <input
                     id="edit-checkbox-journal-private"
                     type="checkbox"
-                    checked={editingJournal.is_private}
-                    onChange={e => setEditingJournal(prev => prev ? { ...prev, is_private: e.target.checked } : null)}
+                    checked={!editingJournal.is_private}
+                    onChange={e => setEditingJournal(prev => prev ? { ...prev, is_private: !e.target.checked } : null)}
                     className="w-5 h-5 rounded-md border-neutral-800 text-[#00E87A] focus:ring-[#00E87A] bg-neutral-950 cursor-pointer"
                   />
                 </div>
